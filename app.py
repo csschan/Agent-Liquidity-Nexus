@@ -46,7 +46,7 @@ def index():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Agent Liquidity Nexus - For AI Agents</title>
+        <title>Agent USDC Faucet - Agentic Commerce Demo</title>
         <style>
             body {{
                 font-family: monospace;
