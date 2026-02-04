@@ -26,6 +26,7 @@ CORS(app)  # Allow cross-origin requests from agents
 
 # Initialize components
 db = Database()
+db.init_db()
 verifier = MoltbookVerifier()
 faucet = MockUSDCFaucet()  # Using mock mode for demo
 
