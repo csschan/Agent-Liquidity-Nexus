@@ -1,0 +1,8 @@
+{
+  "network": "baseSepolia",
+  "contractAddress": "0x833F8f973786c040698509F203866029026CEfF6",
+  "usdcAddress": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "owner": "0x03fDBf3BEA4Fa14806fB69DAf26FFA24f6c22E93",
+  "deployedAt": "2026-02-04T05:38:09.646Z",
+  "blockNumber": 37207601
+}

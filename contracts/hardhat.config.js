@@ -18,6 +18,11 @@ module.exports = {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111
     },
+    baseSepolia: {
+      url: process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 84532
+    },
     hardhat: {
       chainId: 31337
     }
