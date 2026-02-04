@@ -18,6 +18,7 @@ try:
     from verifier import MockVerifier
     from database import Database
     from payment_verifier import MockPaymentVerifier
+    from balance_system import MockBalanceSystem
     logger.info("✅ 成功导入所有模块")
 except Exception as e:
     logger.error(f"导入模块失败: {e}")
@@ -57,6 +58,32 @@ except Exception as e:
                 return {'verified': True, 'amount_eth': expected_amount_eth, 'from_address': '0x' + '1' * 40}
             return {'verified': False, 'error': 'Mock payment not recognized'}
 
+    class MockBalanceSystem:
+        def __init__(self):
+            self.balances = {}
+        def init_db(self):
+            pass
+        def record_deposit(self, agent_name, amount_eth, tx_hash):
+            if not tx_hash.startswith('0xDEPOSIT'):
+                return {'success': False, 'error': 'Use 0xDEPOSIT prefix for mock deposits'}
+            if agent_name not in self.balances:
+                self.balances[agent_name] = {'balance': 0, 'total_deposited': 0}
+            self.balances[agent_name]['balance'] += amount_eth
+            self.balances[agent_name]['total_deposited'] += amount_eth
+            return {'success': True, 'deposit_amount': amount_eth, 'new_balance': self.balances[agent_name]['balance']}
+        def get_balance(self, agent_name):
+            return self.balances.get(agent_name, {}).get('balance', 0.0)
+        def deduct_balance(self, agent_name, amount_eth, service_type='premium_tier'):
+            current = self.get_balance(agent_name)
+            if current < amount_eth:
+                return {'success': False, 'error': 'Insufficient balance', 'current_balance': current, 'shortfall': amount_eth - current}
+            self.balances[agent_name]['balance'] -= amount_eth
+            return {'success': True, 'deducted': amount_eth, 'new_balance': self.balances[agent_name]['balance']}
+        def get_balance_info(self, agent_name):
+            if agent_name not in self.balances:
+                return {'agent_name': agent_name, 'balance_eth': 0, 'has_balance': False}
+            return {'agent_name': agent_name, 'balance_eth': self.balances[agent_name]['balance'], 'has_balance': True}
+
 app = Flask(__name__)
 CORS(app)
 
@@ -67,6 +94,8 @@ try:
     verifier = MockVerifier()
     faucet = MockUSDCFaucet()
     payment_verifier = MockPaymentVerifier()
+    balance_system = MockBalanceSystem()
+    balance_system.init_db()
     logger.info("✅ 组件初始化成功")
 except Exception as e:
     logger.error(f"组件初始化失败: {e}")
@@ -371,6 +400,132 @@ def pricing():
     except Exception as e:
         logger.error(f"Pricing error: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/deposit', methods=['POST'])
+def deposit():
+    """
+    Agent deposits ETH for future autonomous premium requests
+    TRUE AUTONOMOUS: Deposit once, use multiple times without per-request transactions
+    """
+    try:
+        data = request.get_json()
+
+        agent_name = data.get('agent_name')
+        amount_eth = data.get('amount_eth')
+        deposit_tx = data.get('deposit_tx')
+
+        if not all([agent_name, amount_eth, deposit_tx]):
+            return jsonify({
+                'success': False,
+                'error': 'Missing required fields: agent_name, amount_eth, deposit_tx'
+            }), 400
+
+        # Record deposit
+        result = balance_system.record_deposit(agent_name, float(amount_eth), deposit_tx)
+
+        if result.get('success'):
+            logger.info(f"✅ [DEPOSIT] {agent_name}: +{amount_eth} ETH")
+            return jsonify({
+                **result,
+                'message': f'Deposit successful! {amount_eth} ETH added to balance.',
+                'usage': f'You can now use /request-premium-balance for autonomous requests'
+            }), 200
+        else:
+            return jsonify(result), 400
+
+    except Exception as e:
+        logger.error(f"Deposit error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/balance', methods=['GET'])
+def check_balance():
+    """Check agent's balance"""
+    try:
+        agent_name = request.args.get('agent_name')
+
+        if not agent_name:
+            return jsonify({
+                'success': False,
+                'error': 'Missing agent_name parameter'
+            }), 400
+
+        balance_info = balance_system.get_balance_info(agent_name)
+
+        return jsonify({
+            'success': True,
+            **balance_info
+        })
+
+    except Exception as e:
+        logger.error(f"Balance check error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/request-premium-balance', methods=['POST'])
+def request_premium_balance():
+    """
+    Request premium tier using balance (TRUE AUTONOMOUS)
+    No per-request web3 transaction needed!
+    """
+    try:
+        data = request.get_json()
+
+        agent_name = data.get('agent_name')
+        wallet_address = data.get('wallet_address')
+        reason = data.get('reason', 'Autonomous premium request using balance')
+
+        if not agent_name or not wallet_address:
+            return jsonify({
+                'success': False,
+                'error': 'Missing required fields: agent_name, wallet_address'
+            }), 400
+
+        # Check and deduct balance
+        deduct_result = balance_system.deduct_balance(agent_name, PREMIUM_TIER_PRICE, 'premium_tier')
+
+        if not deduct_result.get('success'):
+            return jsonify({
+                **deduct_result,
+                'hint': f'Deposit {deduct_result.get("shortfall", PREMIUM_TIER_PRICE)} ETH using /deposit endpoint'
+            }), 402  # Payment Required
+
+        # Send USDC (premium tier)
+        tx_hash = faucet.send_usdc(wallet_address, PREMIUM_TIER_AMOUNT)
+
+        # Record
+        db.record_request(
+            agent_name=agent_name,
+            wallet_address=wallet_address,
+            reason=reason,
+            amount=PREMIUM_TIER_AMOUNT,
+            tx_hash=tx_hash,
+            moltbook_proof="",
+            success=True,
+            tier='premium_balance',
+            payment_tx='balance_deduction',
+            payment_amount=PREMIUM_TIER_PRICE
+        )
+
+        logger.info(f"✅ [PREMIUM-BALANCE] {agent_name}: {tx_hash} (balance: {deduct_result['new_balance']} ETH remaining)")
+
+        return jsonify({
+            'success': True,
+            'tier': 'premium_balance',
+            'amount': f'{PREMIUM_TIER_AMOUNT} USDC',
+            'tx_hash': tx_hash,
+            'explorer': f'https://sepolia.etherscan.io/tx/{tx_hash}',
+            'message': f'✅ Sent {PREMIUM_TIER_AMOUNT} testnet USDC (Premium tier via balance)',
+            'balance_deducted': PREMIUM_TIER_PRICE,
+            'remaining_balance': deduct_result['new_balance'],
+            'note': 'TRUE AUTONOMOUS: No per-request web3 transaction needed!',
+            'benefits': 'Deposited once, used autonomously - this is true Agentic Commerce'
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Premium balance request error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/stats')
