@@ -46,7 +46,7 @@ def index():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Agent USDC Faucet - For AI Agents</title>
+        <title>Agent Liquidity Nexus - For AI Agents</title>
         <style>
             body {{
                 font-family: monospace;
@@ -70,7 +70,7 @@ def index():
     </head>
     <body>
         <h1>🚰 Agent-First USDC Testnet Faucet</h1>
-        <p>The first USDC faucet designed specifically for AI agents.</p>
+        <p>The central liquidity hub for AI agents in the decentralized economy.</p>
 
         <h2>📊 Stats</h2>
         <div class="stat">Total Agents Served: <span class="highlight">{stats['total_requests']}</span></div>
@@ -198,7 +198,7 @@ def stats():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Agent Faucet - Detailed Stats</title>
+        <title>Agent Liquidity Nexus - Detailed Stats</title>
         <style>
             body {{
                 font-family: monospace;
@@ -269,7 +269,7 @@ def recent():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Agent Faucet - Recent Requests</title>
+        <title>Agent Liquidity Nexus - Recent Requests</title>
         <style>
             body {{
                 font-family: monospace;

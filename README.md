@@ -1,10 +1,10 @@
-# 🚰 Agent-First USDC Testnet Faucet
+# 💎 Agent Liquidity Nexus
 
-> Demonstrating Agentic Commerce: Agents making autonomous economic decisions
+> The central liquidity hub for AI agents in the decentralized economy
 
-Built for **#USDCHackathon** (Agentic Commerce track) | **[→ 30-Second Quick Test](QUICKSTART.md)** ⚡
+**Powering the Agent Economy** 🌐 | Built for **#USDCHackathon** (Agentic Commerce track)
 
-**Live Demo**: https://web-production-19f04.up.railway.app
+**Live Demo**: https://charismatic-simplicity-production-1854.up.railway.app | **[→ Quick Test](QUICKSTART.md)** ⚡
 
 ---
 
@@ -22,21 +22,21 @@ Verify our core claims:
 
 ---
 
-## 🎯 Problem
+## 🎯 The Challenge
 
-AI agents participating in the USDC hackathon need testnet USDC to test their projects. But existing faucets are designed for humans:
-- ❌ Captcha verification
-- ❌ Social media requirements
-- ❌ Manual form filling
-- ❌ Long wait times
+The emerging agent economy needs **reliable liquidity infrastructure**. Existing solutions fail agents:
+- ❌ Human-centric interfaces (Captcha, forms)
+- ❌ Inconsistent availability
+- ❌ No scalability for production use
+- ❌ Not designed for autonomous systems
 
-**This creates a barrier for agents to participate in on-chain experimentation.**
+**Agents need a dedicated liquidity hub, not ad-hoc solutions.**
 
 ---
 
-## 💡 Solution
+## 💡 Our Solution
 
-**Agent-First USDC Faucet** - Optimized for AI agents with **mixed pricing model**:
+**Agent Liquidity Nexus** - The first liquidity infrastructure built specifically for autonomous agents:
 
 ### Two Service Tiers
 
@@ -77,7 +77,7 @@ This is **TRUE Agentic Commerce**: Agents making economic decisions AND executin
 #### Option 1: Free Tier (Simple)
 
 ```bash
-curl -X POST https://web-production-19f04.up.railway.app/request \
+curl -X POST https://charismatic-simplicity-production-1854.up.railway.app/request \
   -H "Content-Type: application/json" \
   -d '{
     "agent_name": "YourAgentName",
@@ -93,7 +93,7 @@ Response: 10 USDC, 24h cooldown
 ```bash
 # Step 1: Send 0.001 ETH payment
 # Step 2: Request with payment proof
-curl -X POST https://web-production-19f04.up.railway.app/request-premium \
+curl -X POST https://charismatic-simplicity-production-1854.up.railway.app/request-premium \
   -H "Content-Type: application/json" \
   -d '{
     "agent_name": "YourAgentName",
@@ -109,7 +109,7 @@ Response: 100 USDC, no cooldown
 
 ```bash
 # Step 1: Deposit once
-curl -X POST https://web-production-19f04.up.railway.app/deposit \
+curl -X POST https://charismatic-simplicity-production-1854.up.railway.app/deposit \
   -H "Content-Type: application/json" \
   -d '{
     "agent_name": "YourAgentName",
@@ -118,10 +118,10 @@ curl -X POST https://web-production-19f04.up.railway.app/deposit \
   }'
 
 # Step 2: Check balance
-curl "https://web-production-19f04.up.railway.app/balance?agent_name=YourAgentName"
+curl "https://charismatic-simplicity-production-1854.up.railway.app/balance?agent_name=YourAgentName"
 
 # Step 3: Use balance for multiple autonomous requests
-curl -X POST https://web-production-19f04.up.railway.app/request-premium-balance \
+curl -X POST https://charismatic-simplicity-production-1854.up.railway.app/request-premium-balance \
   -H "Content-Type: application/json" \
   -d '{
     "agent_name": "YourAgentName",
