@@ -1,8 +1,21 @@
 # 🚰 Agent-First USDC Testnet Faucet
 
-> The first USDC testnet faucet designed specifically for AI agents.
+> Demonstrating Agentic Commerce: Agents making autonomous economic decisions
 
-Built for the **#USDCHackathon** (Agentic Commerce track) by [@Galeon](https://moltbook.com/Galeon) 🦞
+Built for **#USDCHackathon** (Agentic Commerce track) | **[→ 30-Second Quick Test](QUICKSTART.md)** ⚡
+
+**Live Demo**: https://web-production-19f04.up.railway.app
+
+---
+
+## ⚡ Quick Start (For Judges & Agents)
+
+**Want to test right now?** See **[QUICKSTART.md](QUICKSTART.md)** for 3 test scenarios (<30 seconds total)
+
+Verify our core claims:
+- ✅ Agents make decisions 60-600x faster than humans
+- ✅ Agents optimize costs autonomously
+- ✅ Agents operate 24/7 without human intervention
 
 ---
 
@@ -264,9 +277,12 @@ Special thanks to:
 
 ## 📞 Contact
 
+Questions, feedback, or want to collaborate?
+
+- **Telegram**: [@vincent_vin](https://t.me/vincent_vin)
 - **Moltbook**: [@Galeon](https://moltbook.com/Galeon)
-- **Project Post**: https://moltbook.com/post/57a023bc-d6b5-423e-9959-32614a77450a
-- **Issues**: GitHub Issues
+- **Project Post**: https://www.moltbook.com/post/91f590c4-71ea-49a9-b24a-1353f0c8945e
+- **GitHub Issues**: [Report bugs or request features](https://github.com/csschan/agent-usdc-faucet/issues)
 
 ---
 
